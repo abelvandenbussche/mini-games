@@ -1,5 +1,6 @@
 use std::io::{Write, stdin, stdout};
 
+use crate::tetris::tetris_main;
 mod flappy_bird;
 mod tetris;
 
@@ -20,7 +21,7 @@ fn main() {
             .expect("Error while reading line");
         match selection.to_lowercase().trim() {
             "q" | "exit" | "quit" => break,
-            "1" | "tetris" => {}
+            "1" | "tetris" => tetris_main(),
             "2" | "flappy bird" => {}
             _ => println!("\"{selection}\" is not a valid option, \"exit\" to quit!"),
         }
