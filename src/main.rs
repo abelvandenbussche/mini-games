@@ -1,6 +1,8 @@
 use std::io::{Write, stdin, stdout};
 
 use crate::tetris::tetris_main;
+
+mod common;
 mod flappy_bird;
 mod tetris;
 
