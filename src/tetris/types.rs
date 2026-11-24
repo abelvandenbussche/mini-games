@@ -1,5 +1,5 @@
 ///  A tetris piece
-struct Piece {
+pub struct Piece {
     /// The location of the piece in the game
     center: Point,
     /// The location of the blocks relative to the center
@@ -8,7 +8,7 @@ struct Piece {
 }
 
 /// The different kinds of pieces in the game
-enum PieceVariant {
+pub enum PieceVariant {
     /// The square piece
     O,
     /// The straight piece
