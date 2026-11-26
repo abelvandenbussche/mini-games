@@ -4,6 +4,8 @@ use std::{
     time::Duration,
 };
 
+use crossterm::event::{self, KeyEvent};
+
 /// Game state
 struct State {
     head: Point,
@@ -45,7 +47,7 @@ impl State {
             Direction::South => self.head.1 += 1,
             Direction::West => self.head.0 -= 1,
         };
-        // Moving the back to the front
+        // Remove back and insert at front
         self.body.pop();
         self.body.insert(0, original_pos);
     }
@@ -76,6 +78,18 @@ pub fn snake_main() {
     }
 }
 
+/// Get the input from the user in the form of a direction
+fn get_input() -> Option<Direction> {
+    while event::poll(Duration::ZERO).unwrap() {
+        if let Ok(read) = event::read() {
+            match read {
+                _ => {}
+            }
+        }
+    }
+    None
+}
+
 /// Fully display a game frame
 fn display_game(state: &State) -> io::Result<()> {
     let mut out = stdout();
@@ -87,6 +101,8 @@ fn display_game(state: &State) -> io::Result<()> {
                 output.push('#');
             } else if state.body.contains(&cur_point) {
                 output.push('*');
+            } else if cur_point == state.apple {
+                output.push('O');
             } else {
                 output.push(' ');
             }
