@@ -1,9 +1,10 @@
 use std::io::{Write, stdin, stdout};
 
-use crate::tetris::tetris_main;
+use crate::{snake::snake_main, tetris::tetris_main};
 
 mod common;
 mod flappy_bird;
+mod snake;
 mod tetris;
 
 fn main() {
@@ -14,6 +15,7 @@ fn main() {
         println!("What game do you want to play?");
         println!("1) Tetris");
         println!("2) Flappy bird");
+        println!("3) Snake");
         print!(": ");
         let _ = stdout().flush();
 
@@ -25,6 +27,7 @@ fn main() {
             "q" | "exit" | "quit" => break,
             "1" | "tetris" => tetris_main(),
             "2" | "flappy bird" => {}
+            "3" | "snake" => snake_main(),
             _ => println!("\"{selection}\" is not a valid option, \"exit\" to quit!"),
         }
     }
