@@ -1,4 +1,5 @@
 use std::{
+    error::Error,
     io::{self, Write, stdout},
     thread,
     time::Duration,
@@ -51,17 +52,42 @@ impl State {
             growing: false,
         }
     }
-    fn move_snake(&mut self, direction: Direction) {
+    fn move_snake(&mut self, direction: Direction) -> Result<(), ()> {
         let original_pos = self.head;
         match direction {
-            Direction::North => self.head.1 -= 1,
-            Direction::East => self.head.0 += 1,
-            Direction::South => self.head.1 += 1,
-            Direction::West => self.head.0 -= 1,
-        };
+            Direction::North => {
+                if self.head.1 > 0 {
+                    self.head.1 -= 1;
+                } else {
+                    return Err(());
+                }
+            }
+            Direction::East => {
+                if self.head.0 < self.game_dimensions.0 - 1 {
+                    self.head.0 += 1;
+                } else {
+                    return Err(());
+                }
+            }
+            Direction::South => {
+                if self.head.1 < self.game_dimensions.1 - 1 {
+                    self.head.1 += 1;
+                } else {
+                    return Err(());
+                }
+            }
+            Direction::West => {
+                if self.head.0 > 0 {
+                    self.head.0 -= 1;
+                } else {
+                    return Err(());
+                }
+            }
+        }
         // Remove back and insert at front
         self.body.pop();
         self.body.insert(0, original_pos);
+        Ok(())
     }
 }
 
@@ -89,10 +115,14 @@ pub fn snake_main() {
         {
             direction = dir;
         }
-        state.move_snake(direction);
+        let res = state.move_snake(direction);
+        if let Err(_) = res {
+            break;
+        }
         display_game(&state).expect("Error while updating display");
         thread::sleep(Duration::from_millis(100));
     }
+    println!("Game over");
 }
 
 /// Get the input from the user in the form of a direction
