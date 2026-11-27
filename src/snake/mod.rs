@@ -15,12 +15,24 @@ struct State {
     growing: bool,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum Direction {
     North,
     East,
     South,
     West,
+}
+
+impl Direction {
+    /// Checks if the directions are opposites of each other
+    fn is_opposite(&self, other: &Direction) -> bool {
+        match self {
+            Direction::North => *other == Direction::South,
+            Direction::East => *other == Direction::West,
+            Direction::South => *other == Direction::North,
+            Direction::West => *other == Direction::East,
+        }
+    }
 }
 
 impl State {
@@ -72,7 +84,9 @@ pub fn snake_main() {
 
     // Main game loop
     loop {
-        if let Some(dir) = get_input() {
+        if let Some(dir) = get_input()
+            && !direction.is_opposite(&dir)
+        {
             direction = dir;
         }
         state.move_snake(direction);
