@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use crossterm::event::{self, KeyEvent};
+use crossterm::event::{self, KeyCode, KeyEvent, KeyEventKind, KeyEventState, KeyModifiers};
 
 /// Game state
 struct State {
@@ -72,6 +72,9 @@ pub fn snake_main() {
 
     // Main game loop
     loop {
+        if let Some(dir) = get_input() {
+            direction = dir;
+        }
         state.move_snake(direction);
         display_game(&state).expect("Error while updating display");
         thread::sleep(Duration::from_millis(100));
@@ -83,6 +86,17 @@ fn get_input() -> Option<Direction> {
     while event::poll(Duration::ZERO).unwrap() {
         if let Ok(read) = event::read() {
             match read {
+                event::Event::Key(KeyEvent {
+                    code: KeyCode::Char(c),
+                    kind: KeyEventKind::Press,
+                    ..
+                }) => match c {
+                    'w' | 'k' => return Some(Direction::North),
+                    's' | 'j' => return Some(Direction::South),
+                    'd' | 'l' => return Some(Direction::East),
+                    'a' | 'h' => return Some(Direction::West),
+                    _ => {}
+                },
                 _ => {}
             }
         }
