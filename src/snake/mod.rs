@@ -85,9 +85,26 @@ impl State {
             }
         }
         // Remove back and insert at front
-        self.body.pop();
+        if !self.growing {
+            self.body.pop();
+        } else {
+            self.growing = false;
+        }
         self.body.insert(0, original_pos);
         Ok(())
+    }
+    /// Grow and relocate the apple
+    fn collect_apple(&mut self) {
+        self.apple = self.random_exclusive_point();
+        self.growing = true;
+    }
+    /// Generate a random point that is not on the snake or apple
+    fn random_exclusive_point(&self) -> Point {
+        let mut point = Point::random_point(self.game_dimensions.0, self.game_dimensions.1);
+        while point == self.head || point == self.apple || self.body.contains(&point) {
+            point = Point::random_point(self.game_dimensions.0, self.game_dimensions.1);
+        }
+        point
     }
 }
 
@@ -110,14 +127,21 @@ pub fn snake_main() {
 
     // Main game loop
     loop {
+        // Getting user input
         if let Some(dir) = get_input()
             && !direction.is_opposite(&dir)
         {
             direction = dir;
         }
+
+        // Moving the snake
         let res = state.move_snake(direction);
         if let Err(_) = res {
             break;
+        }
+
+        if state.head == state.apple {
+            state.collect_apple();
         }
         display_game(&state).expect("Error while updating display");
         thread::sleep(Duration::from_millis(100));
