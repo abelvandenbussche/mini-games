@@ -1,4 +1,7 @@
-use std::mem::replace;
+use std::{
+    io::{self, Write, stdout},
+    mem::replace,
+};
 
 use rand::RngExt;
 
@@ -33,6 +36,9 @@ pub fn tetris_main() {
     // Main game loop
     loop {
         // Getting user input
+
+        // Updating the display
+        draw_game_state(&state);
     }
 }
 
@@ -53,4 +59,14 @@ fn get_random_piece() -> Piece {
 }
 
 /// Draws a full frame to the terminal
-fn draw_game_state(state: GameState) {}
+fn draw_game_state(state: &GameState) -> io::Result<()> {
+    let mut out = stdout();
+    let mut output = "\x1b[2J\x1b[H".to_owned();
+    for row in state.board {
+        for cell in row {
+            output.push(if cell { '*' } else { ' ' });
+        }
+    }
+    out.write_all(&mut output.as_bytes())?;
+    out.flush()
+}
